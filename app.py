@@ -12,24 +12,8 @@ from linebot.models import (
 
 app = Flask(__name__)
 
-handler = WebhookHandler('55195b80f76455f0a27196744b581b7e') 
-line_bot_api = LineBotApi('STki0uP31oxuXcETGWJgZE1JwPaw+olGuPBGDzgko+OlUu3aoPaZ3IYN3Jphdyi7M8ZlThS0DU7Qp9GBTddWN/XjhF2+GEiDRlJMAGDb/eUXGJtONvTx7uPyHgkpgZxfWyjNL/PKUTpzXVmN/WOzcwdB04t89/1O/w1cDnyilFU=') 
-
-profile = offbot, messageReq, wordsArray, waitingAnswer = [], {}, {}, {}
-
-wait = {
-    'readPoint':{},
-    'readMember':{},
-    'setTime':{},
-    'ROM':{}
-   }
-
-setTime = {}
-setTime = wait["setTime"]
-
-@app.route('/')
-def index():
-    return "<p>Hello World!</p>"
+handler = WebhookHandler('3d7644d429a491ed618d3b2b2fec3b2d') 
+line_bot_api = LineBotApi('x9I42/HXzVLQQ3HLWVmxCf7z5jLAtEf44gpdKmlnGCkzXw9+y+LuKjA8WIklR29p4cXtdgCmV1CCD3woIswyRrOkphjpeubSVLIgWlBtMnI4mcAWYjkHuV48A4C9q3JIhV8GauV4tRmfKDmmZwwSoQdB04t89/1O/w1cDnyilFU=') 
 
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -44,143 +28,18 @@ def callback():
     try:
         handler.handle(body, signature)
     except InvalidSignatureError:
+        print("Invalid signature. Please check your channel access token/channel secret.")
         abort(400)
 
     return 'OK'
 
-# ================= 機器人區塊 Start =================
-@handler.add(MessageEvent, message=TextMessage)  # default
-def handle_text_message(event):                  # default
-    msg = event.message.text #message from user
 
-    # 針對使用者各種訊息的回覆 Start =========
+@handler.add(MessageEvent, message=TextMessage)
+def handle_message(event):
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text=msg))
+        TextSendMessage(text=event.message.text))
 
-    # 針對使用者各種訊息的回覆 End =========
 
-# ================= 機器人區塊 End =================
-if msg.toType == 2:
-            if msg.contentType == 0:
-                if msg.text == "mid":
-                    sendMessage(msg.to, msg.from_)
-                if msg.text == "gid":
-                    sendMessage(msg.to, msg.to)
-                if msg.text == "ginfo":
-                    group = client.getGroup(msg.to)
-                    md = "[Group Name]\n" + group.name + "\n\n[gid]\n" + group.id + "\n\n[Group Picture]\nhttp://dl.profile.line-cdn.net/" + group.pictureStatus
-                    if group.preventJoinByTicket is False: md += "\n\nInvitationURL: Permitted\n"
-                    else: md += "\n\nInvitationURL: Refusing\n"
-                    if group.invitee is None: md += "\nMembers: " + str(len(group.members)) + "人\n\nInviting: 0People"
-                    else: md += "\nMembers: " + str(len(group.members)) + "People\nInvited: " + str(len(group.invitee)) + "People"
-                    sendMessage(msg.to,md)
-                if "gname:" in msg.text:
-                    key = msg.text[22:]
-                    group = client.getGroup(msg.to)
-                    group.name = key
-                    client.updateGroup(group)
-                    sendMessage(msg.to,"Group Name"+key+"Canged to")
-                if msg.text == "url":
-                    sendMessage(msg.to,"line://ti/g/" + client._client.reissueGroupTicket(msg.to))
-                if msg.text == "open":
-                    group = client.getGroup(msg.to)
-                    if group.preventJoinByTicket == False:
-                        sendMessage(msg.to, "already open")
-                    else:
-                        group.preventJoinByTicket = False
-                        client.updateGroup(group)
-                        sendMessage(msg.to, "URL Open")
-                if msg.text == "close":
-                    group = client.getGroup(msg.to)
-                    if group.preventJoinByTicket == True:
-                        sendMessage(msg.to, "already close")
-                    else:
-                        group.preventJoinByTicket = True
-                        client.updateGroup(group)
-                        sendMessage(msg.to, "URL close")
-                if "kick:" in msg.text:
-                    key = msg.text[5:]
-                    client.kickoutFromGroup(msg.to, [key])
-                    contact = client.getContact(key)
-                    sendMessage(msg.to, ""+contact.displayName+"sorry")
-                if "nk:" in msg.text:
-                    key = msg.text[3:]
-                    group = client.getGroup(msg.to)
-                    Names = [contact.displayName for contact in group.members]
-                    Mids = [contact.mid for contact in group.members]
-                    if key in Names:
-                        kazu = Names.index(key)
-                        sendMessage(msg.to, "Bye")
-                        client.kickoutFromGroup(msg.to, [""+Mids[kazu]+""])
-                        contact = client.getContact(Mids[kazu])
-                        sendMessage(msg.to, ""+contact.displayName+" Sorry")
-                    else:
-                        sendMessage(msg.to, "wtf?")
-                if msg.text == "cancel":
-                    group = client.getGroup(msg.to)
-                    if group.invitee is None:
-                        sendMessage(op.message.to, "No one is inviting.")
-                    else:
-                        gInviMids = [contact.mid for contact in group.invitee]
-                        client.cancelGroupInvitation(msg.to, gInviMids)
-                        sendMessage(msg.to, str(len(group.invitee)) + " Done")
-                if "invite:" in msg.text:
-                    key = msg.text[-33:]
-                    client.findAndAddContactsByMid(key)
-                    client.inviteIntoGroup(msg.to, [key])
-                    contact = client.getContact(key)
-                    sendMessage(msg.to, ""+contact.displayName+" I invited you")
-                if msg.text == "me":
-                    M = Message()
-                    M.to = msg.to
-                    M.contentType = 13
-                    M.contentMetadata = {'mid': msg.from_}
-                    client.sendMessage(M)
-                if "show:" in msg.text:
-                    key = msg.text[-33:]
-                    sendMessage(msg.to, text=None, contentMetadata={'mid': key}, contentType=13)
-                    contact = client.getContact(key)
-                    sendMessage(msg.to, ""+contact.displayName+"'s contact")
-                if msg.text == "time":
-                    sendMessage(msg.to, "Current time is" + datetime.datetime.today().strftime('%Y年%m月%d日 %H:%M:%S') + "is")
-                if msg.text == "gift":
-                    sendMessage(msg.to, text="gift sent", contentMetadata=None, contentType=9)
-                if msg.text == "set":
-                    sendMessage(msg.to, "I have set a read point ♪\n「tes」I will show you who I have read ♪")
-                    try:
-                        del wait['readPoint'][msg.to]
-                        del wait['readMember'][msg.to]
-                    except:
-                        pass
-                    wait['readPoint'][msg.to] = msg.id
-                    wait['readMember'][msg.to] = ""
-                    wait['setTime'][msg.to] = datetime.datetime.today().strftime('%Y-%m-%d %H:%M:%S')
-                    wait['ROM'][msg.to] = {}
-                if msg.text == "tes":
-                    if msg.to in wait['readPoint']:
-                        if wait["ROM"][msg.to].items() == []:
-                            chiya = ""
-                        else:
-                            chiya = ""
-                            for rom in wait["ROM"][msg.to].items():
-                            
-                                chiya += rom[1] + "\n"
-                        sendMessage(msg.to, "People who readed %s\nthat's it\n\nPeople who have ignored reads\n%sIt is abnormal ♪\n\nReading point creation date n time:\n[%s]"  % (wait['readMember'][msg.to],chiya,setTime[msg.to]))
-                    else:
-                        sendMessage(msg.to, "An already read point has not been set.\n「set」you can send ♪ read point will be created ♪")
-                else:
-                    pass
-        else:
-            pass
-
-    except Exception as e:
-        print e
-        print ("\n\nSEND_MESSAGE\n\n")
-        return
-
-tracer.addOpInterrupt(25,SEND_MESSAGE)
-
-import os
 if __name__ == "__main__":
-    app.run(host='0.0.0.0',port=os.environ['PORT'])
+    app.run()
