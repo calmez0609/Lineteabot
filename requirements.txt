@@ -2,4 +2,4 @@ line-bot-sdk
 flask
 requests
 Pillow
-io
+py_translator==2.1.9
