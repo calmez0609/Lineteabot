@@ -2,5 +2,8 @@ line-bot-sdk
 flask
 requests
 Pillow
-py-translate
-argparse
+rsa
+thrift
+bs4
+gtts
+googletrans
