@@ -2,4 +2,4 @@ line-bot-sdk
 flask
 requests
 Pillow
-py_translator
+py-translate
