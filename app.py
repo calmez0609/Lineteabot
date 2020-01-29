@@ -1,29 +1,33 @@
-
-import os
-import random
-import sys
+import base64
+import errno
 import json
-import goslate
+import os
+import sys
+import tempfile
 import requests
+import urllib.request
+from argparse import ArgumentParser
+from requests import Request, Session
+from PIL import Image
+from io import BytesIO
 
-from files.data_foodcorner import * # Import file eksternal
-from files.data_longmsg import * # Import file eksternal
-from time import sleep
 from flask import Flask, request, abort
-from linebot import (LineBotApi, WebhookHandler)
-from linebot.exceptions import (InvalidSignatureError)
+from py_translator import Translator
 
+from linebot import (
+    LineBotApi, WebhookHandler
+)
+from linebot.exceptions import (
+    InvalidSignatureError
+)
+from linebot.http_client import (
+    HttpClient, RequestsHttpClient
+)
 from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage,
-    SourceUser, SourceGroup, SourceRoom,
-    TemplateSendMessage, ConfirmTemplate, MessageTemplateAction,
-    ButtonsTemplate, ImageCarouselTemplate, ImageCarouselColumn, URITemplateAction,
-    PostbackTemplateAction, DatetimePickerTemplateAction,
-    CarouselTemplate, CarouselColumn, PostbackEvent,
-    StickerMessage, StickerSendMessage, LocationMessage, LocationSendMessage,
-    ImageMessage, VideoMessage, AudioMessage, FileMessage,
-    UnfollowEvent, FollowEvent, JoinEvent, LeaveEvent, BeaconEvent)
-
+    MessageEvent, TextMessage, TextSendMessage, ImageSendMessage, JoinEvent, LeaveEvent, SourceUser, SourceGroup, SourceRoom,
+    ConfirmTemplate, MessageAction, TemplateSendMessage,Action, PostbackEvent, MemberIds, Profile, ImageMessage,
+    VideoMessage, AudioMessage, FileMessage, QuickReply, QuickReplyButton, PostbackAction, MemberJoinedEvent, MemberLeftEvent
+)
 
 app = Flask(__name__)
 
