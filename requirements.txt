@@ -1,8 +1,4 @@
-base64
-errno
-json
-os
-sys
+line-bot-sdk
+flask
+BytesIO
 requests
-urllib.request
-linebot-sdk
